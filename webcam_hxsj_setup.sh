@@ -4,6 +4,7 @@
 #Written in 2018 by Jonathan Dukes jdukes123@gmail.com
 #To the extent possible under law, the author(s) have dedicated all copyright and related and neighboring rights to this software to the public domain worldwide. This software is distributed without any warranty.
 #You should have received a copy of the CC0 Public Domain Dedication along with this software. If not, see <http://creativecommons.org/publicdomain/zero/1.0/>.
+#2021-09-24 JD: Updated executable paths
 
 #productid: bogus vendor and model number for the "InTeching 720P HD Webcam model HXSJ"
 vendor=1410
@@ -11,7 +12,7 @@ model=1410
 
 #Scan USB for device and assign bus and dev variables if found
 echo -n "Scanning for device..."
-eval $(lsusb | grep "$vendor:$model" | awk '{printf "bus=%s;dev=%s\n",$2+0,$4+0}')
+eval $(/usr/bin/lsusb | /usr/bin/grep "$vendor:$model" | /usr/bin/awk '{printf "bus=%s;dev=%s\n",$2+0,$4+0}')
 if [ -z "$bus" ]; then
     echo "error - No device found"
     exit
@@ -21,9 +22,9 @@ echo "found device on USB $bus-$dev."
 cd /sys/bus/usb/drivers
 
 echo -n "Unbinding device..."
-for binding in $(find -name "$bus-$dev:*") ; do
+for binding in $(/usr/bin/find -name "$bus-$dev:*") ; do
     #Scan for driver bindings for the device and assign to binding and driver variables
-    eval $(awk -F / '{printf "driver=%s;port=%s\n",$2,$3}' <<< $binding )
+    eval $(/usr/bin/awk -F / '{printf "driver=%s;port=%s\n",$2,$3}' <<< $binding )
     #Unbind any currently active drivers
     echo "$port" > "$driver/unbind"
 done
